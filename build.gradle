@@ -1,0 +1,42 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url uri("https://maven.pkg.github.com/trevorism/gradle-release-plugin")
+            credentials {
+                username = findProperty("github.user") ?: System.getenv("GITHUB_ACTOR")
+                password = findProperty("github.token") ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    dependencies {
+        classpath 'com.trevorism:gradle-release-plugin:0.7.0'
+    }
+}
+
+plugins{
+    id "groovy"
+    id "jacoco"
+    id 'java-gradle-plugin'
+}
+
+apply plugin: "com.trevorism.gradle.release"
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+}
+
+dependencies {
+    implementation gradleApi()
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+}
+
+test{
+    useJUnitPlatform()
+}
+
+check.dependsOn "jacocoTestReport"
