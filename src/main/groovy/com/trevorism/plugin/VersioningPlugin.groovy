@@ -18,11 +18,10 @@ class VersioningPlugin implements Plugin<Project> {
         project.apply plugin: 'java'
         project.extensions.create("versioningSettings", VersioningSettings)
 
-        if(project.getTasksByName("appengineDeploy", false).isEmpty()){
+        if(project.getTasksByName("${project.versioningSettings.triggeringTask}", false).isEmpty()){
             project.logger.warn("Appengine plugin not found. Apply the appengine plugin before the versioning plugin")
             return
         }
-
 
         project.task("initializeVersion", type: InitializeVersioningTask) {
             group = VERSIONING_GROUP
@@ -40,7 +39,7 @@ class VersioningPlugin implements Plugin<Project> {
 
         project.tasks.compileJava.mustRunAfter("syncVersion")
         project.tasks.syncVersion.dependsOn("initializeVersion")
-        project.tasks.appengineDeploy.dependsOn("syncVersion")
+        project.tasks."${project.versioningSettings.triggeringTask}".dependsOn("syncVersion")
         project.tasks.bumpVersion.mustRunAfter("appengineDeploy")
     }
 

@@ -23,7 +23,7 @@ class VersioningPluginTest {
     static Project createProject() {
         Project project = ProjectBuilder.builder().withName("foo").build()
         project.with {
-            it.tasks.create("appengineDeploy")
+            it.tasks.create("appengineStage")
             apply plugin: 'com.trevorism.gradle.versioning'
         }
         return project
