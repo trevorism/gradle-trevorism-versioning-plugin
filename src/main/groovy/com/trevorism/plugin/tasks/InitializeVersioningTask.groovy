@@ -2,6 +2,7 @@ package com.trevorism.plugin.tasks
 
 import com.trevorism.plugin.ext.VersioningSettings
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
@@ -33,6 +34,7 @@ class InitializeVersioningTask extends DefaultTask{
         project.ext."${VersioningSettings.NEXT_VERSION_KEY}" = VersioningSettings.PATCH
     }
 
+    @Internal
     String getInitialVersion() {
         try{
             def file = project.file(project.versionSettings.githubActionsDeployWorkflowPath)
