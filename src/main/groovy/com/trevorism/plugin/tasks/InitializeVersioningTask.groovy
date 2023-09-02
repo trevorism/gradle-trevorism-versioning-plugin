@@ -45,9 +45,9 @@ class InitializeVersioningTask extends DefaultTask{
     @Internal
     String getInitialVersion() {
         try{
-            def file = project.file(project.versionSettings.githubActionsDeployWorkflowPath)
+            def file = project.file(project.versioningSettings.githubActionsDeployWorkflowPath)
             if(!file.exists())
-                return VersioningSettings.INITIAL_VERSION
+                return project.version ?: VersioningSettings.INITIAL_VERSION
 
             def versionContent = file.readLines().find { it.contains("version:") }
             def version = versionContent.split(":")[1].trim()
