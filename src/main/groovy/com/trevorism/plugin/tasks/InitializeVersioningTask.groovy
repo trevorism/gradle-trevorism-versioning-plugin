@@ -6,7 +6,7 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
-class InitializeVersioningTask extends DefaultTask{
+class InitializeVersioningTask extends DefaultTask {
 
     @InputFile
     def gradlePropertiesFile = project.file("gradle.properties")
@@ -14,26 +14,21 @@ class InitializeVersioningTask extends DefaultTask{
     @TaskAction
     void initVersionSystem() {
         String version = project.version.toString()
-        if(version == "unspecified")
+        if (version == "unspecified")
             version = getInitialVersion()
         project.logger.info("Initializing version to ${version}")
 
-        if(gradlePropertiesFile.exists()){
-            project.logger.info("Gradle properties file already exists. Updating it.")
+        if (gradlePropertiesFile.exists()) {
             def text = gradlePropertiesFile.text
-            if(!text.contains("version=")){
-                project.logger.info("Adding version to gradle properties file")
+            if (!text.contains("version=")) {
                 text += "\nversion=${version}"
             }
-            if(!text.contains(VersioningSettings.NEXT_VERSION_KEY)){
-                project.logger.info("Adding next version strategy to gradle properties file")
+            if (!text.contains(VersioningSettings.NEXT_VERSION_KEY)) {
                 text += "\n${VersioningSettings.NEXT_VERSION_KEY}=${VersioningSettings.PATCH}"
             }
             project.logger.info("Setting properties file text to ${text}")
-
             gradlePropertiesFile.text = text
-        }
-        else{
+        } else {
             gradlePropertiesFile.createNewFile()
             String content = "version=${version}\n${VersioningSettings.NEXT_VERSION_KEY}=${VersioningSettings.PATCH}"
             project.logger.info("Creating a new gradle.properties file with content ${content}")
@@ -45,9 +40,9 @@ class InitializeVersioningTask extends DefaultTask{
 
     @Internal
     String getInitialVersion() {
-        try{
+        try {
             def file = project.file(project.versioningSettings.githubActionsDeployWorkflowPath)
-            if(!file.exists())
+            if (!file.exists())
                 return VersioningSettings.INITIAL_VERSION
 
             def versionContent = file.readLines().find { it.contains("version:") }
@@ -55,7 +50,7 @@ class InitializeVersioningTask extends DefaultTask{
             def removeQuotes = version.replaceAll("'", "")
             def splitDashes = removeQuotes.split("-")
             return splitDashes.join(".")
-        }catch (Exception e){
+        } catch (Exception e) {
             project.logger.warn("Unable to initialize version from deploy.yml. Defaulting to ${VersioningSettings.INITIAL_VERSION}", e)
             return VersioningSettings.INITIAL_VERSION
         }

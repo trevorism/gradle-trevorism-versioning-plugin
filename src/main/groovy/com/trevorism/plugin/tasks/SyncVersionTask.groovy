@@ -9,17 +9,17 @@ class SyncVersionTask extends DefaultTask {
     @TaskAction
     void syncVersions() {
         VersioningSettings settings = project.versioningSettings
-        Sync(settings.githubActionsDeployWorkflowPath, ":", "'", true)
-        Sync(settings.micronautApplicationPath, "=", "\"")
-        Sync(settings.gradleBuildPath, "=", "\"")
-        Sync(settings.readmePath, ":", "")
+        UpdateVersionWithinFile(settings.githubActionsDeployWorkflowPath, ":", "'", "", true)
+        UpdateVersionWithinFile(settings.micronautApplicationPath, "=", "\"", ",")
+        UpdateVersionWithinFile(settings.gradleBuildPath, "=", "\"", "", true)
+        UpdateVersionWithinFile(settings.readmePath, ":", "", "")
     }
 
-    void Sync(String path, String matchCharacter, String quoteChar, boolean convertDotToDash = false) {
+    void UpdateVersionWithinFile(String path, String matchCharacter, String quoteChar, String suffix, boolean convertDotToDash = false) {
         File file = project.file(path)
         List<String> fileLines = file.readLines()
 
-        fileLines = replaceVersionLine(fileLines, matchCharacter, quoteChar, path, convertDotToDash)
+        fileLines = replaceVersionOnLine(fileLines, matchCharacter, quoteChar, suffix, path, convertDotToDash)
         file.text = fileLines.join("\n")
     }
 
@@ -27,7 +27,7 @@ class SyncVersionTask extends DefaultTask {
         return version.replaceAll("\\.", "-")
     }
 
-    List<String> replaceVersionLine(List<String> fileLines, String matchCharacter, String quoteChar, String filePath, boolean convertToDash = false) {
+    List<String> replaceVersionOnLine(List<String> fileLines, String matchCharacter, String quoteChar, String suffix, String filePath, boolean convertToDash = false) {
         int indexOfVersion = -1
         String foundLine = ""
         for (String line : fileLines) {
@@ -41,7 +41,7 @@ class SyncVersionTask extends DefaultTask {
             return fileLines
         }
 
-        String newLine = foundLine.substring(0, foundLine.indexOf(matchCharacter) + 1) + " ${quoteChar}${convertToDash ? convertDotToDash(project.version) : project.version}${quoteChar}"
+        String newLine = foundLine.substring(0, foundLine.indexOf(matchCharacter) + 1) + " ${quoteChar}${convertToDash ? convertDotToDash(project.version) : project.version}${quoteChar}${suffix}"
         fileLines.set(indexOfVersion, newLine)
         return fileLines
     }

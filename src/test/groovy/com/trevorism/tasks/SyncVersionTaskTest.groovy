@@ -13,7 +13,7 @@ class SyncVersionTaskTest {
         project.version = "1.2.3"
         SyncVersionTask syncVersionTask = project.tasks.syncVersion
         List<String> sampleLines = ["name: Deploy tested project to GCP", "  call-deploy:", "    with:", "      version: '0-0-1'", "permissions: write-all"]
-        def result = syncVersionTask.replaceVersionLine(sampleLines, ":", "'", "", true)
+        def result = syncVersionTask.replaceVersionOnLine(sampleLines, ":", "'", "","", true)
         assert result.contains("      version: '1-2-3'")
     }
 
@@ -23,7 +23,7 @@ class SyncVersionTaskTest {
         project.version = "1.2.3"
         SyncVersionTask syncVersionTask = project.tasks.syncVersion
         List<String> sampleLines = ["name: Deploy tested project to GCP", "  call-deploy:", "    with:", "permissions: write-all"]
-        def result = syncVersionTask.replaceVersionLine(sampleLines, ":", "'", "", true)
+        def result = syncVersionTask.replaceVersionOnLine(sampleLines, ":", "'", "","", true)
         assert result == sampleLines
     }
 
@@ -33,8 +33,8 @@ class SyncVersionTaskTest {
         project.version = "1.2.3"
         SyncVersionTask syncVersionTask = project.tasks.syncVersion
         List<String> sampleLines = ["name: Deploy tested project to GCP", "  call-deploy:", "    with:", "      version = '0-0-1'", "permissions: write-all"]
-        def result = syncVersionTask.replaceVersionLine(sampleLines, "=", "\"", "", false)
-        assert result.contains("      version = \"1.2.3\"")
+        def result = syncVersionTask.replaceVersionOnLine(sampleLines, "=", "\"", ",","", false)
+        assert result.contains("      version = \"1.2.3\",")
     }
 
     @Test
@@ -43,7 +43,7 @@ class SyncVersionTaskTest {
         project.version = "1.2.3"
         SyncVersionTask syncVersionTask = project.tasks.syncVersion
         List<String> sampleLines = ["name: Deploy tested project to GCP", "  call-deploy:", "    with:", "permissions: write-all"]
-        def result = syncVersionTask.replaceVersionLine(sampleLines, "=", "\"", "", false)
+        def result = syncVersionTask.replaceVersionOnLine(sampleLines, "=", "\"", ",","", false)
         assert result == sampleLines
     }
 }
