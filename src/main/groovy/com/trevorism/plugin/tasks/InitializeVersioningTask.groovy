@@ -4,7 +4,6 @@ import com.trevorism.plugin.ext.VersioningSettings
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 class InitializeVersioningTask extends DefaultTask{
@@ -46,8 +45,11 @@ class InitializeVersioningTask extends DefaultTask{
     String getInitialVersion() {
         try{
             def file = project.file(project.versioningSettings.githubActionsDeployWorkflowPath)
+            String versionFromProperties = project.version.toString()
+            if(versionFromProperties == "unspecified")
+                versionFromProperties = null
             if(!file.exists())
-                return project.version ?: VersioningSettings.INITIAL_VERSION
+                return versionFromProperties ?: VersioningSettings.INITIAL_VERSION
 
             def versionContent = file.readLines().find { it.contains("version:") }
             def version = versionContent.split(":")[1].trim()
