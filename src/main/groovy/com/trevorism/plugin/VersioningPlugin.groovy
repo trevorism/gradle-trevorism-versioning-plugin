@@ -16,7 +16,7 @@ class VersioningPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         project.apply plugin: 'java'
-        project.extensions.create("versioningSettings", VersioningSettings)
+        project.extensions.create(VersioningSettings.NAME, VersioningSettings)
 
         if(project.getTasksByName("${project.versioningSettings.triggeringTask}", false).isEmpty()){
             project.logger.warn("Appengine plugin not found. Apply the appengine plugin before the versioning plugin")
