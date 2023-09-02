@@ -12,8 +12,10 @@ class InitializeVersioningTask extends DefaultTask{
     def gradlePropertiesFile = project.file("gradle.properties")
 
     @TaskAction
-    void initVersionSystem(){
-        def version = getInitialVersion()
+    void initVersionSystem() {
+        String version = project.version.toString()
+        if(version == "unspecified")
+            version = getInitialVersion()
         project.logger.info("Initializing version to ${version}")
 
         if(gradlePropertiesFile.exists()){
@@ -45,11 +47,8 @@ class InitializeVersioningTask extends DefaultTask{
     String getInitialVersion() {
         try{
             def file = project.file(project.versioningSettings.githubActionsDeployWorkflowPath)
-            String versionFromProperties = project.version.toString()
-            if(versionFromProperties == "unspecified")
-                versionFromProperties = null
             if(!file.exists())
-                return versionFromProperties ?: VersioningSettings.INITIAL_VERSION
+                return VersioningSettings.INITIAL_VERSION
 
             def versionContent = file.readLines().find { it.contains("version:") }
             def version = versionContent.split(":")[1].trim()

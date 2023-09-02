@@ -7,7 +7,7 @@ class BumpCurrentVersionTask extends DefaultTask{
 
     @TaskAction
     void bumpCurrentVersion(){
-        String version = project.version;
+        String version = project.version
         String nextVersionStrategy = project.nextVersionStrategy
 
         String newVersion = bumpVersion(version, nextVersionStrategy)
@@ -19,7 +19,7 @@ class BumpCurrentVersionTask extends DefaultTask{
     }
 
     private static String bumpVersion(String version, String nextVersionStrategy) {
-        String[] versionParts = version.split("\\.");
+        String[] versionParts = version.split("\\.")
         String major = versionParts[0]
         String minor = versionParts[1]
         String patch = versionParts[2]
