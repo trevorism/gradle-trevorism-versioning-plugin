@@ -22,11 +22,11 @@ class InitializeVersioningTask extends DefaultTask{
             def text = gradlePropertiesFile.text
             if(!text.contains("version=")){
                 project.logger.info("Adding version to gradle properties file")
-                text << "\nversion=${version}"
+                text += "\nversion=${version}"
             }
             if(!text.contains(VersioningSettings.NEXT_VERSION_KEY)){
                 project.logger.info("Adding next version strategy to gradle properties file")
-                text << "\n${VersioningSettings.NEXT_VERSION_KEY}=${VersioningSettings.PATCH}"
+                text += "\n${VersioningSettings.NEXT_VERSION_KEY}=${VersioningSettings.PATCH}"
             }
             project.logger.info("Setting properties file text to ${text}")
 
@@ -54,8 +54,8 @@ class InitializeVersioningTask extends DefaultTask{
             def removeQuotes = version.replaceAll("'", "")
             def splitDashes = removeQuotes.split("-")
             return splitDashes.join(".")
-        }catch (Exception ignored){
-            project.logger.warn("Unable to initialize version from deploy.yml. Defaulting to ${VersioningSettings.INITIAL_VERSION}")
+        }catch (Exception e){
+            project.logger.warn("Unable to initialize version from deploy.yml. Defaulting to ${VersioningSettings.INITIAL_VERSION}", e)
             return VersioningSettings.INITIAL_VERSION
         }
     }
