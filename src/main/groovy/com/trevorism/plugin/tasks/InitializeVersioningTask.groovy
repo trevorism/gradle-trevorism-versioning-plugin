@@ -16,7 +16,7 @@ class InitializeVersioningTask extends DefaultTask{
         def version = getInitialVersion()
 
         if(gradlePropertiesFile.exists()){
-            def text = file.text
+            def text = gradlePropertiesFile.text
             if(!text.contains("version=")){
                 text << "\nversion=${version}"
             }
