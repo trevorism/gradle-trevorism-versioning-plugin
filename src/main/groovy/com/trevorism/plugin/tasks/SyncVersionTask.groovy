@@ -13,12 +13,12 @@ class SyncVersionTask extends DefaultTask {
         UpdateVersionWithinFile(settings.micronautApplicationPath, "=", "\"", ",")
         UpdateVersionWithinFile(settings.gradleBuildPath, "=", "\"", "", true)
         UpdateVersionWithinFile(settings.readmePath, ":", "", "")
+        UpdateAppYaml()
     }
 
     void UpdateVersionWithinFile(String path, String matchCharacter, String quoteChar, String suffix, boolean convertDotToDash = false) {
         File file = project.file(path)
         List<String> fileLines = file.readLines()
-
         fileLines = replaceVersionOnLine(fileLines, matchCharacter, quoteChar, suffix, path, convertDotToDash)
         file.text = fileLines.join("\n")
     }
@@ -46,4 +46,21 @@ class SyncVersionTask extends DefaultTask {
         return fileLines
     }
 
+    void UpdateAppYaml() {
+        String path = "src/main/appengine/app.yaml"
+        File file = project.file(path)
+        List<String> fileLines = file.readLines()
+        int indexOfEntrypoint = -1
+        for (String line : fileLines) {
+            if (line.startsWith("entrypoint: java -jar")) {
+                indexOfEntrypoint = fileLines.indexOf(line)
+            }
+        }
+        if (indexOfEntrypoint == -1) {
+            project.logger.warn("Unable to sync app.yaml")
+        }
+        String newLine = "entrypoint: java -jar ${project.name}-${project.version}-all.jar"
+        fileLines.set(indexOfEntrypoint, newLine)
+        file.text = fileLines.join("\n")
+    }
 }
