@@ -25,6 +25,8 @@ class VersioningPluginTest {
         project.with {
             it.tasks.create("appengineStage")
             apply plugin: 'com.trevorism.gradle.versioning'
+            project.version = "0.0.1"
+            project.ext.nextVersionStrategy = "patch"
         }
         return project
     }

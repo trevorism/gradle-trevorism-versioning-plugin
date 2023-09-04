@@ -2,6 +2,7 @@ package com.trevorism.plugin.tasks
 
 import com.trevorism.plugin.ext.VersioningSettings
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -13,9 +14,11 @@ class InitializeVersioningTask extends DefaultTask {
 
     @TaskAction
     void initVersionSystem() {
-        String version = project.version.toString()
-        if (version == "unspecified")
-            version = getInitialVersion()
+        boolean initialized = true
+        if (project.version == "unspecified" || !project.hasProperty(VersioningSettings.NEXT_VERSION_KEY)) {
+            initialized = false
+        }
+        String version = getInitialVersion()
         project.logger.info("Initializing version to ${version}")
 
         if (gradlePropertiesFile.exists()) {
@@ -32,10 +35,11 @@ class InitializeVersioningTask extends DefaultTask {
             gradlePropertiesFile.createNewFile()
             String content = "version=${version}\n${VersioningSettings.NEXT_VERSION_KEY}=${VersioningSettings.PATCH}"
             project.logger.info("Creating a new gradle.properties file with content ${content}")
-            gradlePropertiesFile << content
+            gradlePropertiesFile.text = content
         }
-        project.version = version
-        project.ext."${VersioningSettings.NEXT_VERSION_KEY}" = VersioningSettings.PATCH
+        if(!initialized){
+            throw new GradleException("Versioning system was not initialized. Please re-run build.")
+        }
     }
 
     @Internal

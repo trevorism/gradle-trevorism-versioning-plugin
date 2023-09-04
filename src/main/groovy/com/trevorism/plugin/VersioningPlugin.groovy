@@ -2,6 +2,7 @@ package com.trevorism.plugin
 
 import com.trevorism.plugin.ext.VersioningSettings
 import com.trevorism.plugin.tasks.BumpCurrentVersionTask
+import com.trevorism.plugin.tasks.CommitChangesTask
 import com.trevorism.plugin.tasks.InitializeVersioningTask
 import com.trevorism.plugin.tasks.SyncVersionTask
 import org.gradle.api.Plugin
@@ -27,9 +28,14 @@ class VersioningPlugin implements Plugin<Project> {
             group = VERSIONING_GROUP
             description = "Sets some project properties for the versioning plugin"
         }
+        project.task("commitChanges", type: CommitChangesTask) {
+            group = VERSIONING_GROUP
+            description = "Updates relevant files to sync the project version"
+        }
         project.task("bumpVersion", type: BumpCurrentVersionTask) {
             group = VERSIONING_GROUP
             description = "Updates the next pending version"
+            finalizedBy("commitChanges")
         }
         project.task("syncVersion", type: SyncVersionTask) {
             group = VERSIONING_GROUP
@@ -37,10 +43,12 @@ class VersioningPlugin implements Plugin<Project> {
             finalizedBy("bumpVersion")
         }
 
+
         project.tasks.compileJava.mustRunAfter("syncVersion")
         project.tasks.syncVersion.dependsOn("initializeVersion")
         project.tasks."${project.versioningSettings.triggeringTask}".dependsOn("syncVersion")
         project.tasks.bumpVersion.mustRunAfter("appengineDeploy")
+        project.tasks.commitChanges.mustRunAfter("appengineDeploy")
     }
 
 }
