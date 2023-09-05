@@ -14,6 +14,5 @@ class VersioningSettings {
     String micronautApplicationPath = "src/main/groovy/com/trevorism/Application.groovy"
     String gradleBuildPath = "build.gradle"
     String readmePath = "README.md"
-    String commitMessage = "[no ci]Bump version"
 
 }
